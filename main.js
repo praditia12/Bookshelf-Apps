@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
         addBook();
     });
+
+    if (isStorageExist()) {
+        loadDataFromStorage();
+    }
 });
 
 function addBook() {
@@ -17,6 +21,7 @@ function addBook() {
     books.push(bookObject);
 
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 function generateId() {
@@ -45,6 +50,24 @@ document.addEventListener(RENDER_EVENT, function () {
     const completedBookList = document.getElementById("completeBookshelfList");
     completedBookList.innerHTML = "";
 
+    const searchBookSubmit = document.getElementById("searchBook");
+    searchBookSubmit.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const keyword = document.getElementById("searchBookTitle").value;
+
+        console.log(searchBook(keyword));
+
+        uncompletedBookList.innerHTML = "";
+        completedBookList.innerHTML = "";
+
+        for (const bookItem of searchBook(keyword)) {
+            const bookElement = makeBook(bookItem);
+            if (!bookItem.isCompleted) {
+                uncompletedBookList.append(bookElement);
+            } else completedBookList.append(bookElement);
+        }
+    });
+
     for (const bookItem of books) {
         const bookElement = makeBook(bookItem);
         if (!bookItem.isCompleted) {
@@ -61,6 +84,20 @@ function findBookIndex(id) {
     }
 
     return -1;
+}
+
+function searchBook(search) {
+    // membuat text menjadi huruf kecil
+    const searchKeyword = search.toLowerCase();
+
+    // Membuat array hasil pencarian
+    const searchResults = books.filter(function (book) {
+        const titleLowerCase = book.bookTitle.toLowerCase();
+
+        return titleLowerCase.includes(searchKeyword);
+    });
+
+    return searchResults;
 }
 
 function makeBook(bookObject) {
@@ -105,6 +142,7 @@ function makeBook(bookObject) {
 
         books.splice(target, 1);
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
     });
 
     // jika btn uncomplete di click
@@ -112,6 +150,7 @@ function makeBook(bookObject) {
         // maka tidak sama dengan true(false)
         bookObject.isCompleted = !bookObject.isCompleted;
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
     });
 
     // jika btn complete di click
@@ -119,6 +158,7 @@ function makeBook(bookObject) {
         // maka isCompleted true
         bookObject.isCompleted = true;
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
     });
 
     if (bookIsCompleted.checked) {
@@ -128,4 +168,36 @@ function makeBook(bookObject) {
     }
 
     return container;
+}
+
+function saveData() {
+    if (isStorageExist()) {
+        const parsed = JSON.stringify(books);
+        localStorage.setItem(STORAGE_KEY, parsed);
+        document.dispatchEvent(new Event(SAVED_EVENT));
+    }
+}
+
+const SAVED_EVENT = "saved-book";
+const STORAGE_KEY = "BOOKSHELF_APPS";
+
+function isStorageExist() /* boolean */ {
+    if (typeof Storage === undefined) {
+        alert("Browser kamu tidak mendukung local storage");
+        return false;
+    }
+    return true;
+}
+
+function loadDataFromStorage() {
+    const serializedData = localStorage.getItem(STORAGE_KEY);
+    let data = JSON.parse(serializedData);
+
+    if (data !== null) {
+        for (const book of data) {
+            books.push(book);
+        }
+    }
+
+    document.dispatchEvent(new Event(RENDER_EVENT));
 }
