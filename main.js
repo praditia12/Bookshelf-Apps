@@ -53,6 +53,16 @@ document.addEventListener(RENDER_EVENT, function () {
     }
 });
 
+function findBookIndex(id) {
+    for (const index in books) {
+        if (books[index].id === id) {
+            return index;
+        }
+    }
+
+    return -1;
+}
+
 function makeBook(bookObject) {
     const title = document.createElement("h2");
     title.innerText = bookObject.bookTitle;
@@ -72,10 +82,50 @@ function makeBook(bookObject) {
     bookIsCompleted.type = "checkbox";
     bookIsCompleted.checked = bookObject.isCompleted;
 
+    // jika checkbox sudah dibaca diklik
     bookIsCompleted.addEventListener("change", function () {
+        // maka checkbox true
         bookObject.isCompleted = bookIsCompleted.checked;
         document.dispatchEvent(new Event(RENDER_EVENT));
     });
+
+    // button uncomplete
+    const uncompleteBtn = document.createElement("button");
+    uncompleteBtn.innerText = "Belum Selesai Dibaca";
+    // button complete
+    const completeBtn = document.createElement("button");
+    completeBtn.innerText = "Selesai Dibaca";
+    // button delete
+    const deleteBookBtn = document.createElement("button");
+    deleteBookBtn.innerText = "Hapus Buku";
+
+    // fungsi delete buku
+    deleteBookBtn.addEventListener("click", function () {
+        const target = findBookIndex(bookObject.id);
+
+        books.splice(target, 1);
+        document.dispatchEvent(new Event(RENDER_EVENT));
+    });
+
+    // jika btn uncomplete di click
+    uncompleteBtn.addEventListener("click", function () {
+        // maka tidak sama dengan true(false)
+        bookObject.isCompleted = !bookObject.isCompleted;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+    });
+
+    // jika btn complete di click
+    completeBtn.addEventListener("click", function () {
+        // maka isCompleted true
+        bookObject.isCompleted = true;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+    });
+
+    if (bookIsCompleted.checked) {
+        container.append(uncompleteBtn, deleteBookBtn);
+    } else {
+        container.append(completeBtn, deleteBookBtn);
+    }
 
     return container;
 }
