@@ -143,8 +143,8 @@ main {
 
 .book_shelf > .book_list > .book_item {
     padding: 8px 16px 16px 16px;
-    border: 1px solid black;
-    border-radius: 5px;
+    /* border: 1px solid black;
+    border-radius: 5px; */
     margin: 10px 0;
 }
 
@@ -169,3 +169,51 @@ main {
     background-color: darkred;
     color: white;
 }
+
+
+/* Style for the card container */
+.card {
+    border: none;
+    width: auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+  }
+  
+  /* Style for the card title */
+  .card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  /* Style for the card content */
+  .card p {
+    color: #555;
+    line-height: 1.4;
+  }
+  
+  /* Example styling for a button inside the card */
+  .card button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 8px 16px;
+    margin: 12px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .card button.deleteBtn{
+    background-color: #ff1b1b;
+  }
+
+  .card button.deleteBtn:hover{
+    background-color: #df0000;
+  }
+  
+  .card button:hover {
+    background-color: #2980b9;
+  }
+  

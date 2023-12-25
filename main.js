@@ -107,7 +107,7 @@ function makeBook(bookObject) {
     timestamp.innerText = bookObject.year;
 
     const container = document.createElement("article");
-    container.classList.add("book_item");
+    container.classList.add("book_item", "card");
     container.append(title, author, timestamp);
     container.setAttribute("id", `buku-${bookObject.id}`);
 
@@ -130,6 +130,7 @@ function makeBook(bookObject) {
     completeBtn.innerText = "Selesai Dibaca";
     // button delete
     const deleteBookBtn = document.createElement("button");
+    deleteBookBtn.classList.add("deleteBtn");
     deleteBookBtn.innerText = "Hapus Buku";
 
     // fungsi delete buku
