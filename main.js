@@ -14,10 +14,10 @@ function addBook() {
     const bookTitle = document.getElementById("inputBookTitle").value;
     const bookAuthor = document.getElementById("inputBookAuthor").value;
     const bookYear = document.getElementById("inputBookYear").value;
-    const bookIsCompleted = document.getElementById("inputBookIsComplete").checked;
+    const bookisComplete = document.getElementById("inputBookIsComplete").checked;
 
     const generatedID = generateId();
-    const bookObject = generateBookObject(generatedID, bookTitle, bookAuthor, bookYear, bookIsCompleted);
+    const bookObject = generateBookObject(generatedID, bookTitle, bookAuthor, bookYear, bookisComplete);
     books.push(bookObject);
 
     document.dispatchEvent(new Event(RENDER_EVENT));
@@ -28,13 +28,13 @@ function generateId() {
     return +new Date();
 }
 
-function generateBookObject(id, bookTitle, bookAuthor, timestamp, isCompleted) {
+function generateBookObject(id, title, author, year, isComplete) {
     return {
         id,
-        bookTitle,
-        bookAuthor,
-        timestamp,
-        isCompleted,
+        title,
+        author,
+        year: Number(year),
+        isComplete,
     };
 }
 
@@ -42,8 +42,6 @@ const books = [];
 const RENDER_EVENT = "render-book";
 
 document.addEventListener(RENDER_EVENT, function () {
-    console.log(books);
-
     const uncompletedBookList = document.getElementById("incompleteBookshelfList");
     uncompletedBookList.innerHTML = "";
 
@@ -55,14 +53,12 @@ document.addEventListener(RENDER_EVENT, function () {
         event.preventDefault();
         const keyword = document.getElementById("searchBookTitle").value;
 
-        console.log(searchBook(keyword));
-
         uncompletedBookList.innerHTML = "";
         completedBookList.innerHTML = "";
 
         for (const bookItem of searchBook(keyword)) {
             const bookElement = makeBook(bookItem);
-            if (!bookItem.isCompleted) {
+            if (!bookItem.isComplete) {
                 uncompletedBookList.append(bookElement);
             } else completedBookList.append(bookElement);
         }
@@ -70,7 +66,7 @@ document.addEventListener(RENDER_EVENT, function () {
 
     for (const bookItem of books) {
         const bookElement = makeBook(bookItem);
-        if (!bookItem.isCompleted) {
+        if (!bookItem.isComplete) {
             uncompletedBookList.append(bookElement);
         } else completedBookList.append(bookElement);
     }
@@ -92,7 +88,7 @@ function searchBook(search) {
 
     // Membuat array hasil pencarian
     const searchResults = books.filter(function (book) {
-        const titleLowerCase = book.bookTitle.toLowerCase();
+        const titleLowerCase = book.title.toLowerCase();
 
         return titleLowerCase.includes(searchKeyword);
     });
@@ -102,27 +98,27 @@ function searchBook(search) {
 
 function makeBook(bookObject) {
     const title = document.createElement("h2");
-    title.innerText = bookObject.bookTitle;
+    title.innerText = bookObject.title;
 
     const author = document.createElement("p");
-    author.innerText = bookObject.bookAuthor;
+    author.innerText = bookObject.author;
 
     const timestamp = document.createElement("p");
-    timestamp.innerText = bookObject.timestamp;
+    timestamp.innerText = bookObject.year;
 
     const container = document.createElement("article");
     container.classList.add("book_item");
     container.append(title, author, timestamp);
     container.setAttribute("id", `buku-${bookObject.id}`);
 
-    let bookIsCompleted = document.createElement("input");
-    bookIsCompleted.type = "checkbox";
-    bookIsCompleted.checked = bookObject.isCompleted;
+    let bookisComplete = document.createElement("input");
+    bookisComplete.type = "checkbox";
+    bookisComplete.checked = bookObject.isComplete;
 
     // jika checkbox sudah dibaca diklik
-    bookIsCompleted.addEventListener("change", function () {
+    bookisComplete.addEventListener("change", function () {
         // maka checkbox true
-        bookObject.isCompleted = bookIsCompleted.checked;
+        bookObject.isComplete = bookisComplete.checked;
         document.dispatchEvent(new Event(RENDER_EVENT));
     });
 
@@ -148,20 +144,20 @@ function makeBook(bookObject) {
     // jika btn uncomplete di click
     uncompleteBtn.addEventListener("click", function () {
         // maka tidak sama dengan true(false)
-        bookObject.isCompleted = !bookObject.isCompleted;
+        bookObject.isComplete = !bookObject.isComplete;
         document.dispatchEvent(new Event(RENDER_EVENT));
         saveData();
     });
 
     // jika btn complete di click
     completeBtn.addEventListener("click", function () {
-        // maka isCompleted true
-        bookObject.isCompleted = true;
+        // maka isComplete true
+        bookObject.isComplete = true;
         document.dispatchEvent(new Event(RENDER_EVENT));
         saveData();
     });
 
-    if (bookIsCompleted.checked) {
+    if (bookisComplete.checked) {
         container.append(uncompleteBtn, deleteBookBtn);
     } else {
         container.append(completeBtn, deleteBookBtn);
